@@ -63,12 +63,49 @@ UKF::~UKF() {}
  * either radar or laser.
  */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
-  /**
-  TODO:
+  /*****************************************************************************
+   *  Initialization
+   ****************************************************************************/
+  if (!is_initialized_) {
+    previous_timestamp_ = meas_package.timestamp_;   
 
-  Complete this function! Make sure you switch between lidar and radar
-  measurements.
-  */
+    if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+      cout << "init with sensor type RADAR" << endl;
+      //float ro = meas_package.raw_measurements_(0);
+      //float theta = meas_package.raw_measurements_(1);
+      //x_ << ro * cos(theta), ro * sin(theta), 0, 0;
+    }
+    else if (meas_package.sensor_type_ == MeasurementPackage::LASER) { 
+      cout << "init with sensor type LASER" << endl;
+      //x_ << meas_package.raw_measurements_(0), meas_package.raw_measurements_(1), 0, 0;
+    }
+
+    // done initializing, no need to predict or update
+    is_initialized_ = true;
+    return;
+  }
+  /*****************************************************************************
+   *  Prediction
+   ****************************************************************************/
+
+	float delta_t = (meas_package.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+	previous_timestamp_ = meas_package.timestamp_;
+
+  Prediction(delta_t);
+
+  /*****************************************************************************
+   *  Update
+   ****************************************************************************/
+
+  if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    UpdateRadar(meas_package);
+  } else {
+    UpdateLidar(meas_package);
+  }
+
+  // print the output
+  cout << "x_ = " << x_ << endl;
+  cout << "P_ = " << P_ << endl;
 }
 
 /**
