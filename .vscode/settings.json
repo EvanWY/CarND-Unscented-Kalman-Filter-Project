@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "locale": "cpp",
+        "string": "cpp",
+        "dense": "cpp"
     }
 }

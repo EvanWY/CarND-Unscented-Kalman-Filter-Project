@@ -107,6 +107,35 @@ private:
 
   double previous_timestamp_;
 
+  double delta_t;
+
+  void AugmentedSigmaPoints(MatrixXd& Xsig_aug);
+
+  void SigmaPointPrediction(MatrixXd& Xsig_pred, MatrixXd& Xsig_aug);
+
+  void PredictMeanAndCovariance(MatrixXd& Xsig_pred);
+
+  //set state dimension
+  int n_x = 5;
+
+  //set augmented dimension
+  int n_aug = 7;
+
+  //define spreading parameter
+  double lambda = 3 - n_aug;
+
+  //Process noise standard deviation longitudinal acceleration in m/s^2
+  double std_a = 0.2;
+
+  //Process noise standard deviation yaw acceleration in rad/s^2
+  double std_yawdd = 0.2;
+
+  //create vector for weights
+  VectorXd weights;
+
+
+  MatrixXd Xsig_aug_;
+
 };
 
 #endif /* UKF_H */
