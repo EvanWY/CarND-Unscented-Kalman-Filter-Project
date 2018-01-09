@@ -62,6 +62,11 @@ UKF::UKF() {
 
   Xsig_aug_ = MatrixXd(n_aug, 2 * n_aug + 1);
   Xsig_pred_ = MatrixXd(n_x, 2 * n_aug + 1);
+
+  P_.setIdentity();
+
+  cout << "aaaaaaaaa" << P_ << endl;
+  
 }
 
 UKF::~UKF() {}
