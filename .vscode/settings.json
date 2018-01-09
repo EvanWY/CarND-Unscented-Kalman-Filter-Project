@@ -3,6 +3,9 @@
         "algorithm": "cpp",
         "locale": "cpp",
         "string": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "geometry": "cpp",
+        "iterator": "cpp",
+        "vector": "cpp"
     }
 }
