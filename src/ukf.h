@@ -123,6 +123,8 @@ private:
 
   void UpdateLidarState(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S, VectorXd& z);
 
+  double CalculateNIS(MatrixXd& S, VectorXd& z_pred, VectorXd& z);
+
   //set state dimension
   int n_x = 5;
 
@@ -140,6 +142,14 @@ private:
 
 
   MatrixXd Xsig_aug_;
+
+  int cnt_NIS_Lidar_higher = 0;
+  int cnt_NIS_Lidar = 0;
+  float threshold_NIS_Lidar = 6.0;
+
+  int cnt_NIS_Radar_higher = 0;
+  int cnt_NIS_Radar = 0;
+  float threshold_NIS_Radar = 7.8;
 
 };
 

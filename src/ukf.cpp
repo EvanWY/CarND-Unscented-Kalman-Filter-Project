@@ -25,10 +25,10 @@ UKF::UKF() {
   P_ = MatrixXd(5, 5);
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 2;
+  std_a_ = 1.6;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.75;
+  std_yawdd_ = 0.25;
   
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
@@ -118,6 +118,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   // print the output
   cout << "x_ = " << x_ << endl;
   cout << "P_ = " << P_ << endl;
+  cout << "NIS Lidar: " << 100.0*cnt_NIS_Lidar_higher/cnt_NIS_Lidar << "% above" << endl;
+  cout << "NIS Radar: " << 100.0*cnt_NIS_Radar_higher/cnt_NIS_Radar << "% above" << endl;
 }
 
 /**
@@ -151,9 +153,16 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   MatrixXd S = MatrixXd(n_z,n_z);
   VectorXd z_pred = VectorXd(n_z);
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
+  VectorXd z = meas_package.raw_measurements_;
 
   PredictLidarMeasurement(Zsig, z_pred, S);
-  UpdateLidarState(Zsig, z_pred, S, meas_package.raw_measurements_);
+  UpdateLidarState(Zsig, z_pred, S, z);
+  double NIS = CalculateNIS(S, z_pred, z);
+  
+  if (NIS > threshold_NIS_Lidar) {
+    cnt_NIS_Lidar_higher ++;
+  }
+  cnt_NIS_Lidar ++;
 }
 
 /**
@@ -171,9 +180,21 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   MatrixXd S = MatrixXd(n_z,n_z);
   VectorXd z_pred = VectorXd(n_z);
   MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
+  VectorXd z = meas_package.raw_measurements_;
 
   PredictRadarMeasurement(Zsig, z_pred, S);
-  UpdateRadarState(Zsig, z_pred, S, meas_package.raw_measurements_);
+  UpdateRadarState(Zsig, z_pred, S, z);
+  double NIS = CalculateNIS(S, z_pred, z);
+
+  if (NIS > threshold_NIS_Radar) {
+    cnt_NIS_Radar_higher ++;
+  }
+  cnt_NIS_Radar ++;
+}
+
+double UKF::CalculateNIS(MatrixXd& S, VectorXd& z_pred, VectorXd& z) {
+  VectorXd err = z - z_pred;
+  return err.transpose() * S.inverse() * err;
 }
 
 
